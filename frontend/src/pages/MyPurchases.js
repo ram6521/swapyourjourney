@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';   // ✅ changed here
 import './TicketList.css';
 
 function MyPurchases() {
@@ -12,10 +12,7 @@ function MyPurchases() {
 
   const fetchTickets = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get('/api/tickets/purchases', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await API.get('/api/tickets/purchases');  // ✅ changed
       setTickets(res.data);
     } catch (err) {
       console.error('Error fetching purchases:', err);
@@ -83,7 +80,9 @@ function MyPurchases() {
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">💺 Seat</span>
-                    <span className="detail-value">{ticket.seatNo} ({ticket.seatCategory})</span>
+                    <span className="detail-value">
+                      {ticket.seatNo} ({ticket.seatCategory})
+                    </span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">📌 Landmark</span>
@@ -91,11 +90,15 @@ function MyPurchases() {
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">💰 Paid</span>
-                    <span className="detail-value text-success">₹{ticket.sellPrice}</span>
+                    <span className="detail-value text-success">
+                      ₹{ticket.sellPrice}
+                    </span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">👤 Seller</span>
-                    <span className="detail-value">{ticket.seller?.name || ticket.sellerName}</span>
+                    <span className="detail-value">
+                      {ticket.seller?.name || ticket.sellerName}
+                    </span>
                   </div>
                   {ticket.bookedAt && (
                     <div className="detail-row">

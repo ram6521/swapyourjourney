@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api';   // ✅ changed here
 import './HomePage.css';
 
 function HomePage({ role }) {
@@ -9,21 +9,16 @@ function HomePage({ role }) {
 
   const fetchUserTickets = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
       let res;
-      
+
       if (role === 'seller') {
         // Get sold tickets for seller
-        res = await axios.get('/api/tickets/sold', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        res = await API.get('/api/tickets/sold');
       } else {
         // Get purchased tickets for buyer
-        res = await axios.get('/api/tickets/purchases', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        res = await API.get('/api/tickets/purchases');
       }
-      
+
       // Get only the 3 most recent tickets
       setUserTickets(res.data.slice(0, 3));
     } catch (err) {
@@ -45,7 +40,6 @@ function HomePage({ role }) {
           <h1 className="hero-title">
             Swap Your Journey,
             <br />
-            
           </h1>
           <p className="hero-subtitle">
             Sell the ticket if you don't want. Buy the ticket if you want.
@@ -56,7 +50,10 @@ function HomePage({ role }) {
               <span className="arrow">→</span>
             </button>
             {role === 'seller' && (
-              <button className="hero-btn secondary" onClick={() => navigate('/create-ticket')}>
+              <button
+                className="hero-btn secondary"
+                onClick={() => navigate('/create-ticket')}
+              >
                 Sell Your Ticket
               </button>
             )}
@@ -67,10 +64,14 @@ function HomePage({ role }) {
         {userTickets.length > 0 && (
           <div className="hero-visual">
             {userTickets.map((ticket, index) => (
-              <div key={ticket._id} className={`floating-ticket ticket-${index + 1}`}>
+              <div
+                key={ticket._id}
+                className={`floating-ticket ticket-${index + 1}`}
+              >
                 <div className="ticket-mini">
                   <div className="ticket-route">
-                    {ticket.from.substring(0, 3).toUpperCase()} → {ticket.to.substring(0, 3).toUpperCase()}
+                    {ticket.from.substring(0, 3).toUpperCase()} →{' '}
+                    {ticket.to.substring(0, 3).toUpperCase()}
                   </div>
                   <div className="ticket-price">₹{ticket.sellPrice}</div>
                   <div className="ticket-status">
@@ -136,7 +137,10 @@ function HomePage({ role }) {
         <div className="cta-content">
           <h2>Ready to Start Saving?</h2>
           <p>Join thousands of smart travelers today</p>
-          <button className="cta-button" onClick={() => navigate('/')}>
+          <button
+            className="cta-button"
+            onClick={() => navigate('/')}
+          >
             Get Started Now
             <span className="arrow">→</span>
           </button>

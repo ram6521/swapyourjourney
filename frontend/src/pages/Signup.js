@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api';   // ✅ changed here
 import './Auth.css';
 
 function Signup({ setUser }) {
@@ -11,6 +11,7 @@ function Signup({ setUser }) {
     password: '',
     phone: ''
   });
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -27,19 +28,16 @@ function Signup({ setUser }) {
     e.preventDefault();
     setError('');
 
-    // Validate email format
     if (!validateEmail(form.email)) {
       setError('Please enter a valid email address (e.g., user@example.com)');
       return;
     }
 
-    // Validate password length
     if (form.password.length < 6) {
       setError('Password must be at least 6 characters long');
       return;
     }
 
-    // Validate phone number (basic validation)
     if (form.phone.length < 10) {
       setError('Please enter a valid phone number');
       return;
@@ -48,7 +46,7 @@ function Signup({ setUser }) {
     setLoading(true);
 
     try {
-      await axios.post('/api/auth/signup', form);
+      await API.post('/api/auth/signup', form);   // ✅ changed
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.msg || 'Signup failed. Please try again.');
@@ -95,7 +93,7 @@ function Signup({ setUser }) {
               required
             />
             {form.email && !validateEmail(form.email) && (
-              <small style={{color: '#FF3B30', fontSize: '12px', marginTop: '4px', display: 'block'}}>
+              <small style={{ color: '#FF3B30', fontSize: '12px', marginTop: '4px', display: 'block' }}>
                 Please enter a valid email format
               </small>
             )}
@@ -128,13 +126,17 @@ function Signup({ setUser }) {
               minLength="6"
             />
             {form.password && form.password.length < 6 && (
-              <small style={{color: '#FF3B30', fontSize: '12px', marginTop: '4px', display: 'block'}}>
+              <small style={{ color: '#FF3B30', fontSize: '12px', marginTop: '4px', display: 'block' }}>
                 Password must be at least 6 characters
               </small>
             )}
           </div>
 
-          <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+          <button
+            type="submit"
+            className="btn btn-primary btn-block"
+            disabled={loading}
+          >
             {loading ? 'Creating account...' : 'Sign Up'}
           </button>
 

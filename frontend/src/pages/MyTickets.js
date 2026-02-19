@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';   // ✅ changed here
 import './TicketList.css';
 
 function MyTickets() {
@@ -13,10 +13,7 @@ function MyTickets() {
 
   const fetchTickets = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get('/api/tickets/my-tickets', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await API.get('/api/tickets/my-tickets');   // ✅ changed
       setTickets(res.data);
     } catch (err) {
       console.error('Error fetching tickets:', err);
@@ -29,10 +26,7 @@ function MyTickets() {
     if (!window.confirm('Are you sure you want to delete this ticket?')) return;
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`/api/tickets/delete/${ticketId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await API.delete(`/api/tickets/delete/${ticketId}`);   // ✅ changed
       setMessage('Ticket deleted successfully!');
       fetchTickets();
       setTimeout(() => setMessage(''), 3000);
@@ -70,7 +64,13 @@ function MyTickets() {
             {tickets.map((ticket) => (
               <div key={ticket._id} className="ticket-card">
                 <div className="ticket-badge">
-                  <span className={`badge ${ticket.status === 'available' ? 'badge-success' : 'badge-danger'}`}>
+                  <span
+                    className={`badge ${
+                      ticket.status === 'available'
+                        ? 'badge-success'
+                        : 'badge-danger'
+                    }`}
+                  >
                     {ticket.status}
                   </span>
                 </div>
@@ -100,7 +100,9 @@ function MyTickets() {
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">💺 Seat</span>
-                    <span className="detail-value">{ticket.seatNo} ({ticket.seatCategory})</span>
+                    <span className="detail-value">
+                      {ticket.seatNo} ({ticket.seatCategory})
+                    </span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">💰 Selling Price</span>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api';   // ✅ changed here
 import './Auth.css';
 
 function ResetPassword() {
@@ -10,6 +10,7 @@ function ResetPassword() {
     code: '',
     password: ''
   });
+
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,13 +26,18 @@ function ResetPassword() {
     setLoading(true);
 
     try {
-      const res = await axios.post('/api/auth/reset-password', form);
+      const res = await API.post('/api/auth/reset-password', form);  // ✅ changed
       setMessage(res.data.msg);
+
       setTimeout(() => {
         navigate('/');
       }, 2000);
+
     } catch (err) {
-      setError(err.response?.data?.msg || 'Failed to reset password. Please check your code.');
+      setError(
+        err.response?.data?.msg ||
+        'Failed to reset password. Please check your code.'
+      );
     } finally {
       setLoading(false);
     }
@@ -43,7 +49,9 @@ function ResetPassword() {
         <div className="auth-header">
           <div className="auth-icon">🔑</div>
           <h1 className="auth-title gradient-text">Reset Password</h1>
-          <p className="auth-subtitle">Enter your reset code and new password</p>
+          <p className="auth-subtitle">
+            Enter your reset code and new password
+          </p>
         </div>
 
         {message && <div className="alert alert-success">{message}</div>}
@@ -91,12 +99,18 @@ function ResetPassword() {
             />
           </div>
 
-          <button type="submit" className="btn btn-success btn-block" disabled={loading}>
+          <button
+            type="submit"
+            className="btn btn-success btn-block"
+            disabled={loading}
+          >
             {loading ? 'Resetting...' : 'Reset Password'}
           </button>
 
           <div className="auth-footer">
-            <Link to="/" className="auth-link">← Back to Login</Link>
+            <Link to="/" className="auth-link">
+              ← Back to Login
+            </Link>
           </div>
         </form>
       </div>

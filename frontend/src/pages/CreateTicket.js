@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from '../api';
 import './CreateTicket.css';
 
 function CreateTicket() {
@@ -15,16 +15,15 @@ function CreateTicket() {
     actualPrice: '',
     sellPrice: ''
   });
+
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Get today's date in YYYY-MM-DD format
   const today = new Date().toISOString().split('T')[0];
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    // Clear error when user types
     setError('');
   };
 
@@ -33,7 +32,6 @@ function CreateTicket() {
     setError('');
     setMessage('');
 
-    // Validate date is not in the past
     const selectedDate = new Date(form.date);
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
@@ -43,16 +41,14 @@ function CreateTicket() {
       return;
     }
 
-    // Validate selling price is less than actual price
     const actualPrice = parseFloat(form.actualPrice);
     const sellPrice = parseFloat(form.sellPrice);
 
     if (sellPrice >= actualPrice) {
-      setError('Selling price must be less than the actual price. You cannot sell a ticket for more than or equal to its original price.');
+      setError('Selling price must be less than the actual price.');
       return;
     }
 
-    // Additional validation: selling price should be reasonable (at least 1 rupee less)
     if (actualPrice - sellPrice < 1) {
       setError('Selling price must be at least ₹1 less than the actual price.');
       return;
@@ -61,10 +57,7 @@ function CreateTicket() {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.post('/api/tickets/create', form, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await API.post('/api/tickets/create', form);
 
       setMessage('Ticket created successfully!');
       setForm({
@@ -220,7 +213,6 @@ function CreateTicket() {
                   type="number"
                   name="actualPrice"
                   className="input"
-                  placeholder="e.g., 1000"
                   min="1"
                   value={form.actualPrice}
                   onChange={handleChange}
@@ -234,22 +226,11 @@ function CreateTicket() {
                   type="number"
                   name="sellPrice"
                   className="input"
-                  placeholder="e.g., 850"
                   min="1"
                   value={form.sellPrice}
                   onChange={handleChange}
                   required
                 />
-                {form.actualPrice && form.sellPrice && parseFloat(form.sellPrice) < parseFloat(form.actualPrice) && (
-                  <small style={{color: '#30D158', fontSize: '12px', marginTop: '4px', display: 'block'}}>
-                    ✓ You'll save buyers ₹{parseFloat(form.actualPrice) - parseFloat(form.sellPrice)}
-                  </small>
-                )}
-                {form.actualPrice && form.sellPrice && parseFloat(form.sellPrice) >= parseFloat(form.actualPrice) && (
-                  <small style={{color: '#FF3B30', fontSize: '12px', marginTop: '4px', display: 'block'}}>
-                    ✗ Selling price must be less than actual price
-                  </small>
-                )}
               </div>
             </div>
 

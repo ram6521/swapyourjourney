@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api';   // 👈 changed here
 import './Auth.css';
 
 function Login({ setUser, setRole }) {
@@ -19,16 +19,17 @@ function Login({ setUser, setRole }) {
     setLoading(true);
 
     try {
-      const res = await axios.post('/api/auth/login', form);
+      const res = await API.post('/api/auth/login', form);  // 👈 changed
+
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       setUser(res.data.user);
-      
+
       if (res.data.user.role) {
         localStorage.setItem('role', res.data.user.role);
         setRole(res.data.user.role);
       }
-      
+
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.msg || 'Login failed. Please check your credentials.');

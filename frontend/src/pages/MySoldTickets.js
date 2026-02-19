@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';   // ✅ changed here
 import './TicketList.css';
 
 function MySoldTickets() {
@@ -12,10 +12,7 @@ function MySoldTickets() {
 
   const fetchTickets = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get('/api/tickets/sold', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await API.get('/api/tickets/sold');   // ✅ changed
       setTickets(res.data);
     } catch (err) {
       console.error('Error fetching sold tickets:', err);
@@ -79,15 +76,21 @@ function MySoldTickets() {
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">💰 Sold For</span>
-                    <span className="detail-value text-success">₹{ticket.sellPrice}</span>
+                    <span className="detail-value text-success">
+                      ₹{ticket.sellPrice}
+                    </span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">👤 Buyer</span>
-                    <span className="detail-value">{ticket.buyer?.name || 'N/A'}</span>
+                    <span className="detail-value">
+                      {ticket.buyer?.name || 'N/A'}
+                    </span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">📧 Buyer Email</span>
-                    <span className="detail-value">{ticket.buyer?.email || 'N/A'}</span>
+                    <span className="detail-value">
+                      {ticket.buyer?.email || 'N/A'}
+                    </span>
                   </div>
                   {ticket.bookedAt && (
                     <div className="detail-row">

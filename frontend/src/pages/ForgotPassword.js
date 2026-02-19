@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api';   // ✅ changed here
 import './Auth.css';
 
 function ForgotPassword() {
@@ -17,7 +17,7 @@ function ForgotPassword() {
     setLoading(true);
 
     try {
-      const res = await axios.post('/api/auth/forgot-password', { email });
+      const res = await API.post('/api/auth/forgot-password', { email });  // ✅ changed
       setMessage(res.data.msg);
       setSent(true);
     } catch (err) {
@@ -53,21 +53,32 @@ function ForgotPassword() {
               />
             </div>
 
-            <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+            <button
+              type="submit"
+              className="btn btn-primary btn-block"
+              disabled={loading}
+            >
               {loading ? 'Sending...' : 'Send Reset Code'}
             </button>
 
             <div className="auth-footer">
-              <Link to="/" className="auth-link">← Back to Login</Link>
+              <Link to="/" className="auth-link">
+                ← Back to Login
+              </Link>
             </div>
           </form>
         ) : (
           <div className="text-center">
-            <Link to="/reset-password" className="btn btn-primary btn-block">
+            <Link
+              to="/reset-password"
+              className="btn btn-primary btn-block"
+            >
               Reset Password →
             </Link>
             <div className="auth-footer mt-3">
-              <Link to="/" className="auth-link">← Back to Login</Link>
+              <Link to="/" className="auth-link">
+                ← Back to Login
+              </Link>
             </div>
           </div>
         )}

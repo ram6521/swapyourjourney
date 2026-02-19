@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';   // ✅ changed here
 import PaymentModal from '../components/PaymentModal';
 import './TicketList.css';
 
@@ -16,7 +16,7 @@ function TicketList({ role }) {
 
   const fetchTickets = async () => {
     try {
-      const res = await axios.get('/api/tickets/available');
+      const res = await API.get('/api/tickets/available');   // ✅ changed
       setTickets(res.data);
     } catch (err) {
       console.error('Error fetching tickets:', err);
@@ -32,15 +32,12 @@ function TicketList({ role }) {
 
   const handlePaymentSuccess = async () => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(`/api/tickets/book/${selectedTicket._id}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
+      await API.post(`/api/tickets/book/${selectedTicket._id}`);  // ✅ changed
+
       setMessage('Ticket booked successfully!');
       setShowPayment(false);
       fetchTickets();
-      
+
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
       console.error('Booking error:', err);
@@ -111,7 +108,9 @@ function TicketList({ role }) {
                     </div>
                     <div className="detail-row">
                       <span className="detail-label">💺 Seat</span>
-                      <span className="detail-value">{ticket.seatNo} ({ticket.seatCategory})</span>
+                      <span className="detail-value">
+                        {ticket.seatNo} ({ticket.seatCategory})
+                      </span>
                     </div>
                     <div className="detail-row">
                       <span className="detail-label">📌 Landmark</span>
@@ -140,7 +139,7 @@ function TicketList({ role }) {
                   </div>
 
                   {role === 'buyer' && (
-                    <button 
+                    <button
                       className="btn btn-success btn-block glow-on-hover"
                       onClick={() => handleBookClick(ticket)}
                     >
