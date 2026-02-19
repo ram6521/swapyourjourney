@@ -1,11 +1,7 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-
-// Import routes
-const authRoutes = require('./routes/authRoutes');
-const ticketRoutes = require('./routes/ticketRoutes');
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
 
@@ -13,28 +9,27 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ MongoDB Connected Successfully'))
-  .catch((err) => console.error('❌ MongoDB Connection Error:', err));
+  .then(() => console.log("✅ MongoDB Connected Successfully"))
+  .catch((err) => console.log("❌ MongoDB Error:", err));
 
-// Routes
+// Import Routes
+const authRoutes = require('./routes/authRoutes');
+const ticketRoutes = require('./routes/ticketRoutes');
+
+// Use Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tickets', ticketRoutes);
 
-// Health check route
-app.get('/', (req, res) => {
-  res.json({ message: 'Swap Your Journey API is running!' });
+// Test Route
+app.get("/", (req, res) => {
+  res.send("🚀 Swap Your Journey API is running...");
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ msg: 'Something went wrong!' });
-});
+// Port
+const PORT = process.env.PORT || 5001;
 
-// Start server
-const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

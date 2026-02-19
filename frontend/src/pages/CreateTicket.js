@@ -24,6 +24,8 @@ function CreateTicket() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    // Clear error when user types
+    setError('');
   };
 
   const handleSubmit = async (e) => {
@@ -38,6 +40,21 @@ function CreateTicket() {
 
     if (selectedDate < currentDate) {
       setError('Cannot create ticket for past dates. Please select today or a future date.');
+      return;
+    }
+
+    // Validate selling price is less than actual price
+    const actualPrice = parseFloat(form.actualPrice);
+    const sellPrice = parseFloat(form.sellPrice);
+
+    if (sellPrice >= actualPrice) {
+      setError('Selling price must be less than the actual price. You cannot sell a ticket for more than or equal to its original price.');
+      return;
+    }
+
+    // Additional validation: selling price should be reasonable (at least 1 rupee less)
+    if (actualPrice - sellPrice < 1) {
+      setError('Selling price must be at least ₹1 less than the actual price.');
       return;
     }
 
@@ -223,6 +240,16 @@ function CreateTicket() {
                   onChange={handleChange}
                   required
                 />
+                {form.actualPrice && form.sellPrice && parseFloat(form.sellPrice) < parseFloat(form.actualPrice) && (
+                  <small style={{color: '#30D158', fontSize: '12px', marginTop: '4px', display: 'block'}}>
+                    ✓ You'll save buyers ₹{parseFloat(form.actualPrice) - parseFloat(form.sellPrice)}
+                  </small>
+                )}
+                {form.actualPrice && form.sellPrice && parseFloat(form.sellPrice) >= parseFloat(form.actualPrice) && (
+                  <small style={{color: '#FF3B30', fontSize: '12px', marginTop: '4px', display: 'block'}}>
+                    ✗ Selling price must be less than actual price
+                  </small>
+                )}
               </div>
             </div>
 
